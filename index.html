@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LightUp ClearRide Initiative</title>
+  <meta name="description" content="Safety & Insurance Clarity for Micro-Mobility Riders">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f9fafb;
+      color: #111827;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1e3a8a, #fbbf24);
+      color: white;
+      padding: 24px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: 0.5px;
+    }
+
+    header p {
+      margin-top: 8px;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .container {
+      padding: 16px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .card h2 {
+      font-size: 16px;
+      margin-bottom: 8px;
+      color: #1e3a8a;
+    }
+
+    .icon-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      font-size: 14px;
+    }
+
+    .icon {
+      background: #f3f4f6;
+      padding: 10px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .cta {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .button {
+      display: inline-block;
+      background: #10b981;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .button:hover {
+      background: #059669;
+    }
+
+    .small {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 8px;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 12px;
+      padding: 20px;
+      color: #6b7280;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #1e3a8a;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    /* QR code image */
+    #qr-code {
+      display: block;
+      margin: 10px auto;
+      width: 120px;
+      height: 120px;
+    }
+
+    /* Language toggle */
+    .lang-option {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .lang-option span {
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: #e5e7eb;
+    }
+    .lang-option span.active {
+      background: #1e3a8a;
+      color: white;
+    }
+
+    /* Hidden guide steps */
+    .guide-step {
+      display: none;
+      background: #f3f4f6;
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 12px;
+      text-align: left;
+    }
+    .guide-step.show {
+      display: block;
+    }
+    .guide-step h3 {
+      margin-top: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>⚡ LightUp ClearRide Initiative</h1>
+  <p id="subtitle">Safety & Insurance Clarity for Micro-Mobility Riders</p>
+  <div class="badge">QR Safety Hub</div>
+  <!-- QR Code Placeholder (you can replace src with your own QR) -->
+  <img id="qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://your-site.com" alt="QR Code to this page">
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>🧠 What This Is</h2>
+    <p id="what-text">
+      This page provides simple safety, usage, and insurance awareness information
+      for electric bikes, scooters, and micro-mobility devices.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>⚡ Safety Snapshot</h2>
+    <div class="icon-row">
+      <div class="icon">🚲 Ride Rules</div>
+      <div class="icon">🛡️ Liability</div>
+      <div class="icon">🛣️ Where to Ride</div>
+      <div class="icon">⚠️ Common Risks</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🛡️ Insurance Awareness</h2>
+    <p id="insurance-text">
+      Coverage for electric mobility devices varies by policy.
+      Check your insurance provider for details about liability and personal coverage.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🌐 Language Options</h2>
+    <div class="lang-option">
+      <span class="active" data-lang="en">English</span>
+      <span data-lang="es">Español</span>
+      <span data-lang="tl">Tagalog</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📊 Why This Exists</h2>
+    <p id="why-text">
+      Micro-mobility adoption is increasing, but safety and insurance information
+      is not always clearly communicated at the point of sale.
+    </p>
+  </div>
+
+  <div class="cta">
+    <button id="startGuide" class="button">Start Safety Guide</button>
+    <p class="small">Estimated time: under 2 minutes</p>
+    <!-- Interactive guide steps -->
+    <div id="guideContainer" class="guide-step">
+      <h3>🔍 Step 1: Know Your Device</h3>
+      <p>Check the speed limit and weight capacity of your e‑bike or scooter.</p>
+      <h3>📋 Step 2: Wear Gear</h3>
+      <p>Always use a helmet. Consider gloves and knee pads.</p>
+      <h3>🛣️ Step 3: Follow Local Rules</h3>
+      <p>Ride in bike lanes where available; obey traffic signals.</p>
+      <p><em>Guide complete – you're all set!</em></p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Provided by LightUp ClearRide Initiative<br/>
+  A safety communication framework for micro-mobility education.
+</footer>
+
+<script>
+  // --- Language Toggle ---
+  const translations = {
+    en: {
+      subtitle: "Safety & Insurance Clarity for Micro-Mobility Riders",
+      what: "This page provides simple safety, usage, and insurance awareness information for electric bikes, scooters, and micro-mobility devices.",
+      insurance: "Coverage for electric mobility devices varies by policy. Check your insurance provider for details about liability and personal coverage.",
+      why: "Micro-mobility adoption is increasing, but safety and insurance information is not always clearly communicated at the point of sale."
+    },
+    es: {
+      subtitle: "Claridad de Seguridad y Seguros para Usuarios de Micro-Movilidad",
+      what: "Esta página proporciona información simple de seguridad, uso y conciencia sobre seguros para bicicletas eléctricas, patinetas y dispositivos de micro-movilidad.",
+      insurance: "La cobertura para dispositivos de movilidad eléctrica varía según la póliza. Consulta a tu proveedor de seguros para detalles sobre responsabilidad y cobertura personal.",
+      why: "La adopción de micro-movilidad está aumentando, pero la información de seguridad y seguros no siempre se comunica claramente en el punto de venta."
+    },
+    tl: {
+      subtitle: "Kaligtasan at Kalinawan ng Seguro para sa mga Riders ng Micro-Mobility",
+      what: "Ang pahinang ito ay nagbibigay ng simpleng impormasyon tungkol sa kaligtasan, paggamit, at kamalayan sa seguro para sa mga de-kuryenteng bisikleta, scooter, at iba pang micro-mobility device.",
+      insurance: "Ang coverage para sa mga de-kuryenteng mobility device ay nag-iiba ayon sa polisiya. Suriin ang iyong insurance provider para sa mga detalye tungkol sa pananagutan at personal na coverage.",
+      why: "Ang paggamit ng micro-mobility ay dumarami, ngunit ang impormasyon tungkol sa kaligtasan at seguro ay hindi palaging malinaw na naipapahayag sa punto ng pagbebenta."
+    }
+  };
+
+  const langSpans = document.querySelectorAll('.lang-option span');
+  const subtitle = document.getElementById('subtitle');
+  const whatText = document.getElementById('what-text');
+  const insuranceText = document.getElementById('insurance-text');
+  const whyText = document.getElementById('why-text');
+
+  function switchLang(lang) {
+    const t = translations[lang];
+    subtitle.textContent = t.subtitle;
+    whatText.textContent = t.what;
+    insuranceText.textContent = t.insurance;
+    whyText.textContent = t.why;
+    langSpans.forEach(span => {
+      span.classList.remove('active');
+      if (span.dataset.lang === lang) span.classList.add('active');
+    });
+  }
+
+  langSpans.forEach(span => {
+    span.addEventListener('click', () => {
+      switchLang(span.dataset.lang);
+      // also hide guide when language changes
+      document.getElementById('guideContainer').classList.remove('show');
+    });
+  });
+
+  // --- Safety Guide Toggle ---
+  const guideBtn = document.getElementById('startGuide');
+  const guideContainer = document.getElementById('guideContainer');
+
+  guideBtn.addEventListener('click', () => {
+    guideContainer.classList.toggle('show');
+    guideBtn.textContent = guideContainer.classList.contains('show')
+      ? 'Hide Safety Guide'
+      : 'Start Safety Guide';
+  });
+</script>
+
+</body>
+</html>
