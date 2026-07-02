@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SouthBay ClearRide – Admin Dashboard</title>
+  <style>
+    body { font-family: Arial; max-width: 700px; margin: auto; padding: 20px; background: #f3f4f6; }
+    h1 { text-align: center; color: #1e3a8a; }
+    .card { background: white; border-radius: 12px; padding: 16px; margin: 12px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    label { font-weight: bold; display: block; margin-top: 10px; }
+    input, textarea, select { width: 100%; padding: 8px; margin-top: 4px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+    textarea { min-height: 60px; }
+    .btn { background: #10b981; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; margin-top: 12px; }
+    .btn:hover { background: #059669; }
+    .status { margin-top: 12px; padding: 8px; border-radius: 8px; }
+    .success { background: #d1fae5; color: #065f46; }
+    .error { background: #fce4ec; color: #b91c1c; }
+    #login { max-width: 350px; margin: 80px auto; }
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    th, td { border:1px solid #ddd; padding:8px; text-align:left; }
+    th { background:#e5e7eb; }
+    .card button { margin-right: 4px; }
+  </style>
+</head>
+<body>
+<div id="login">
+  <h1>🔐 Admin Login</h1>
+  <input type="password" id="pwd" placeholder="Password" style="width:100%; padding:10px;"/>
+  <button class="btn" onclick="login()" style="width:100%;">Enter</button>
+  <p class="small" style="text-align:center; color:maroon;" id="loginError"></p>
+</div>
+
+<div id="dashboard" style="display:none;">
+  <h1>⚙️ SouthBay ClearRide – Admin</h1>
+
+  <!-- Page Content Editor -->
+  <div class="card">
+    <h2>📝 Page Content</h2>
+    <label>Subtitle</label>
+    <input type="text" id="subtitle" />
+    <label>What This Is</label>
+    <textarea id="what"></textarea>
+    <label>Insurance Awareness</label>
+    <textarea id="insurance"></textarea>
+    <label>Why This Exists</label>
+    <textarea id="why"></textarea>
+  </div>
+
+  <!-- QR Target -->
+  <div class="card">
+    <h2>📱 QR Target URL</h2>
+    <label>QR Code points to:</label>
+    <input type="url" id="qrTarget" placeholder="https://your-site.com/index.html" />
+  </div>
+
+  <!-- Announcement -->
+  <div class="card">
+    <h2>📢 Announcement (optional)</h2>
+    <textarea id="announcement" placeholder="e.g. New helmet law from July 1"></textarea>
+  </div>
+
+  <button class="btn" onclick="saveContent()">💾 Save Page Changes</button>
+  <div id="status" class="status" style="display:none;"></div>
+
+  <hr/>
+
+  <!-- Contact Submissions -->
+  <div class="card">
+    <h2>📋 Contact Submissions</h2>
+    <div id="contactList"></div>
+    <button class="btn" style="background:#3b82f6;" onclick="exportContacts()">📤 Export CSV</button>
+    <button class="btn" style="background:#ef4444;" onclick="clearContacts()">🗑️ Delete All</button>
+  </div>
+
+  <hr/>
+
+  <!-- Survey Manager -->
+  <div class="card">
+    <h2>📊 Survey Manager</h2>
+    <button class="btn" style="background:#8b5cf6;" onclick="addSurvey()">➕ New Survey</button>
+    <div id="surveyList"></div>
+    <div id="surveyEditor" style="display:none; margin-top:12px;">
+      <h3 id="editorTitle">Create Survey</h3>
+      <label>Survey Title</label>
+      <input type="text" id="surveyTitle" />
+      <label>Question 1</label>
+      <input type="text" id="surveyQ1" />
+      <label>Answer Type 1</label>
+      <select id="surveyType1">
+        <option value="text">Text</option>
+        <option value="yesno">Yes/No</option>
+        <option value="scale1-5">Scale 1-5</option>
+      </select>
+      <div id="moreQuestions"></div>
+      <button class="btn" style="background:#10b981; margin-top:8px;" onclick="addQuestionField()">➕ Add Question</button>
+      <button class="btn" style="background:#3b82f6; margin-top:8px;" onclick="saveSurvey()">💾 Save Survey</button>
+    </div>
+  </div>
+
+  <hr/>
+  <button class="btn" style="background:#ef4444;" onclick="resetDefaults()">Reset All to Defaults</button>
+</div>
+
+<script>
+  const ADMIN_PASSWORD = "clearride2025"; // Change this!
+
+  function login() {
+    const pwd = document.getElementById('pwd').value;
+    if (pwd === ADMIN_PASSWORD) {
+      document.getElementById('login').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      loadContent();
+      loadContacts();
+      loadSurveys();
+    } else {
+      document.getElementById('loginError').textContent = 'Wrong password.';
+    }
+  }
+
+  // ================= Content =================
+  function loadContent() {
+    const data = JSON.parse(localStorage.getItem('southbayClearRideData'));
+    if (data) {
+      document.getElementById('subtitle').value = data.subtitle || '';
+      document.getElementById('what').value = data.what || '';
+      document.getElementById('insurance').value = data.insurance || '';
+      document.getElementById('why').value = data.why || '';
+      document.getElementById('qrTarget').value = data.qrTarget || 'https://your-site.com/index.html';
+      document.getElementById('announcement').value = data.announcement || '';
+    } else {
+      document.getElementById('subtitle').value = 'Micro‑Mobility Info for South Bay San Diego';
+      document.getElementById('what').value = 'A simple safety, insurance, and local riding guide...';
+      document.getElementById('insurance').value = 'Coverage varies. Check your policy...';
+      document.getElementById('why').value = 'Micro‑mobility is growing fast...';
+      document.getElementById('qrTarget').value = 'https://your-site.com/index.html';
+      document.getElementById('announcement').value = '';
+    }
+  }
+
+  function saveContent() {
+    const data = {
+      subtitle: document.getElementById('subtitle').value,
+      what: document.getElementById('what').value,
+      insurance: document.getElementById('insurance').value,
+      why: document.getElementById('why').value,
+      qrTarget: document.getElementById('qrTarget').value,
+      announcement: document.getElementById('announcement').value,
+      lastUpdated: new Date().toISOString()
+    };
+    localStorage.setItem('southbayClearRideData', JSON.stringify(data));
+    showStatus('✅ Page content saved!', 'success');
+  }
+
+  function resetDefaults() {
+    if (confirm('Reset all data (content, contacts, surveys)?')) {
+      localStorage.removeItem('southbayClearRideData');
+      localStorage.removeItem('southbayContacts');
+      localStorage.removeItem('southbaySurveys');
+      loadContent();
+      loadContacts();
+      loadSurveys();
+      showStatus('🔄 All defaults restored.', 'success');
+    }
+  }
+
+  function showStatus(msg, type) {
+    const el = document.getElementById('status');
+    el.textContent = msg;
+    el.className = 'status ' + type;
+    el.style.display = 'block';
+    setTimeout(() => el.style.display = 'none', 4000);
+  }
+
+  // ================= Contacts =================
+  function loadContacts() {
+    const contacts = JSON.parse(localStorage.getItem('southbayContacts')) || [];
+    const container = document.getElementById('contactList');
+    if (contacts.length === 0) { container.innerHTML = '<p>No contacts yet.</p>'; return; }
+    let html = '<table><tr><th>Date</th><th>Name</th><th>Email</th><th>Phone</th><th>Message</th></tr>';
+    contacts.forEach(c => {
+      html += `<tr><td>${new Date(c.date).toLocaleDateString()}</td><td>${c.name}</td><td>${c.email}</td><td>${c.phone || '-'}</td><td>${c.message || '-'}</td></tr>`;
+    });
+    html += '</table>';
+    container.innerHTML = html;
+  }
+
+  function exportContacts() {
+    const contacts = JSON.parse(localStorage.getItem('southbayContacts')) || [];
+    if (contacts.length === 0) { alert('No contacts.'); return; }
+    let csv = 'Date,Name,Email,Phone,Message\n';
+    contacts.forEach(c => { csv += `"${c.date}","${c.name}","${c.email}","${c.phone}","${c.message}"\n`; });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'contacts.csv'; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function clearContacts() {
+    if (confirm('Delete all contacts?')) { localStorage.removeItem('southbayContacts'); loadContacts(); }
+  }
+
+  // ================= Surveys =================
+  let editingSurveyIndex = -1;
+
+  function loadSurveys() {
+    const surveys = JSON.parse(localStorage.getItem('southbaySurveys')) || [];
+    const container = document.getElementById('surveyList');
+    container.innerHTML = '';
+    surveys.forEach((s, idx) => {
+      const div = document.createElement('div');
+      div.style = 'border:1px solid #ddd; padding:8px; margin:4px 0; border-radius:6px;';
+      div.innerHTML = `<strong>${s.title}</strong> (${s.questions.length} questions, ${(s.responses || []).length} responses) 
+        <button onclick="editSurvey(${idx})">✏️ Edit</button> 
+        <button onclick="deleteSurvey(${idx})">🗑️ Delete</button> 
+        <button onclick="viewResults(${idx})">📈 Results</button>`;
+      container.appendChild(div);
+    });
+  }
+
+  function addSurvey() {
+    editingSurveyIndex = -1;
+    document.getElementById('surveyEditor').style.display = 'block';
+    document.getElementById('editorTitle').textContent = 'Create Survey';
+    document.getElementById('surveyTitle').value = '';
+    document.getElementById('surveyQ1').value = '';
+    document.getElementById('surveyType1').value = 'text';
+    document.getElementById('moreQuestions').innerHTML = '';
+  }
+
+  function editSurvey(idx) {
+    const surveys = JSON.parse(localStorage.getItem('southbaySurveys')) || [];
+    const s = surveys[idx];
+    if (!s) return;
+    editingSurveyIndex = idx;
+    document.getElementById('surveyEditor').style.display = 'block';
+    document.getElementById('editorTitle').textContent = 'Edit Survey';
+    document.getElementById('surveyTitle').value = s.title;
+    document.getElementById('surveyQ1').value = s.questions[0]?.text || '';
+    document.getElementById('surveyType1').value = s.questions[0]?.type || 'text';
+    let html = '';
+    for (let i = 1; i < s.questions.length; i++) {
+      html += `<label>Question ${i+1}</label><input type="text" class="q-text" value="${s.questions[i].text}" /><select class="q-type"><option value="text" ${s.questions[i].type==='text'?'selected':''}>Text</option><option value="yesno" ${s.questions[i].type==='yesno'?'selected':''}>Yes/No</option><option value="scale1-5" ${s.questions[i].type==='scale1-5'?'selected':''}>Scale 1-5</option></select>`;
+    }
+    document.getElementById('moreQuestions').innerHTML = html;
+  }
+
+  function addQuestionField() {
+    const container = document.getElementById('moreQuestions');
+    const num = container.children.length / 2 + 2;
+    const label = document.createElement('label'); label.textContent = `Question ${num}`;
+    const input = document.createElement('input'); input.type = 'text'; input.className = 'q-text';
+    const select = document.createElement('select'); select.className = 'q-type';
+    select.innerHTML = '<option value="text">Text</option><option value="yesno">Yes/No</option><option value="scale1-5">Scale 1-5</option>';
+    container.appendChild(label); container.appendChild(input); container.appendChild(select);
+  }
+
+  function saveSurvey() {
+    const title = document.getElementById('surveyTitle').value.trim();
+    if (!title) { alert('Survey title required.'); return; }
+    const q1Text = document.getElementById('surveyQ1').value.trim();
+    const q1Type = document.getElementById('surveyType1').value;
+    if (!q1Text) { alert('Question 1 required.'); return; }
+    const questions = [{ text: q1Text, type: q1Type }];
+    document.querySelectorAll('#moreQuestions .q-text').forEach((inp, i) => {
+      if (inp.value.trim()) {
+        const type = document.querySelectorAll('#moreQuestions .q-type')[i].value;
+        questions.push({ text: inp.value.trim(), type });
+      }
+    });
+    const survey = { title, questions, responses: [] };
+    let surveys = JSON.parse(localStorage.getItem('southbaySurveys')) || [];
+    if (editingSurveyIndex >= 0) surveys[editingSurveyIndex] = survey;
+    else surveys.push(survey);
+    localStorage.setItem('southbaySurveys', JSON.stringify(surveys));
+    document.getElementById('surveyEditor').style.display = 'none';
+    loadSurveys();
+  }
+
+  function deleteSurvey(idx) {
+    let surveys = JSON.parse(localStorage.getItem('southbaySurveys')) || [];
+    if (confirm(`Delete survey "${surveys[idx].title}"?`)) {
+      surveys.splice(idx, 1);
+      localStorage.setItem('southbaySurveys', JSON.stringify(surveys));
+      loadSurveys();
+    }
+  }
+
+  function viewResults(idx) {
+    const surveys = JSON.parse(localStorage.getItem('southbaySurveys')) || [];
+    const s = surveys[idx];
+    if (!s || !s.responses || s.responses.length === 0) { alert('No responses yet.'); return; }
+    let csv = 'Date,' + s.questions.map(q => `"${q.text}"`).join(',') + '\n';
+    s.responses.forEach(r => { csv += `"${r.date}",` + r.answers.map(a => `"${a}"`).join(',') + '\n'; });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `${s.title.replace(/\s+/g,'_')}_results.csv`; a.click();
+    URL.revokeObjectURL(url);
+  }
+</script>
+</body>
+</html>
