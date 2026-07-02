@@ -1,0 +1,2 @@
+Local QR Generation: Instead of hitting an external API, drop a lightweight JavaScript library like qrcode.js right into your index.html. This eliminates third-party runtime dependencies and makes your app faster and more secure.
+Storage Realism: When localStorage becomes a bottleneck (since it doesn't sync across different users' devices globally), swapping the save/load functions out for a serverless provider like Supabase or Firebase takes very little code but immediately solves the multi-user limitation
